@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全台比價搜尋 - Google Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+        }
+
+        .google-shadow {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+        }
+
+        .google-shadow-hover:hover {
+            box-shadow: 0 1px 8px rgba(32, 33, 36, 0.35);
+        }
+
+        .btn-google {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            color: #3c4043;
+            transition: all 0.2s;
+        }
+
+        .btn-google:hover {
+            border: 1px solid #dadce0;
+            color: #202124;
+            background-color: #f8f9fa;
+        }
+
+        .logo-font {
+            font-size: 80px;
+            font-weight: 500;
+            letter-spacing: -2px;
+        }
+
+        .blue {
+            color: #4285F4;
+        }
+
+        .red {
+            color: #EA4335;
+        }
+
+        .yellow {
+            color: #FBBC05;
+        }
+
+        .green {
+            color: #34A853;
+        }
+
+        .search-bar {
+            border: 1px solid #dfe1e5;
+            transition: box-shadow 0.2s;
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+            border-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen">
+
+    <!-- Google Style Logo -->
+    <div class="mb-8 select-none">
+        <span class="logo-font blue">S</span><span class="logo-font red">e</span><span
+            class="logo-font yellow">a</span><span class="logo-font blue">r</span><span
+            class="logo-font green">c</span><span class="logo-font red">h</span>
+        <span class="text-xl font-bold text-gray-500 ml-2">比價去</span>
+    </div>
+
+    <!-- 搜尋列 -->
+    <div class="w-full max-w-[584px] px-4">
+        <div class="search-bar flex items-center bg-white rounded-full px-5 py-3 mb-8">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3"></i>
+            <input type="text" id="searchInput" placeholder="輸入商品名稱，開啟全台比價..."
+                class="flex-grow focus:outline-none text-lg">
+            <i class="fa-solid fa-keyboard text-gray-500 hover:text-gray-700 cursor-pointer mx-2"></i>
+            <i class="fa-solid fa-microphone text-blue-500 cursor-pointer"></i>
+        </div>
+
+        <!-- 按鈕區 -->
+        <div class="flex flex-wrap justify-center gap-3">
+            <button onclick="openAll()" class="btn-google px-6 py-2 rounded text-sm font-medium">同步開啟 8 大網站</button>
+            <button onclick="lucky()" class="btn-google px-6 py-2 rounded text-sm font-medium">好手氣 (隨機選一家)</button>
+        </div>
+
+        <!-- 彈窗阻擋提示 -->
+        <div id="popupWarning"
+            class="hidden mt-6 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs rounded text-center">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+            提醒：如果網站沒有自動打開，請點擊瀏覽器網址列右側的圖示以「允許彈出式視窗」。
+        </div>
+    </div>
+
+    <!-- 平台列表 -->
+    <div class="mt-16 w-full max-w-2xl px-4">
+        <p class="text-center text-gray-500 text-sm mb-6">點擊圖示可單獨跳轉搜尋：</p>
+        <div class="grid grid-cols-4 md:grid-cols-8 gap-4" id="platformIcons">
+            <!-- 由 JS 生成 -->
+        </div>
+    </div>
+
+    <script>
+        const platforms = [
+            { name: "蝦皮購物", icon: "https://www.google.com/s2/favicons?domain=shopee.tw&sz=64", url: "https://shopee.tw/search?keyword=" },
+            { name: "momo", icon: "https://www.google.com/s2/favicons?domain=momoshop.com.tw&sz=64", url: "https://www.momoshop.com.tw/search/searchShop.jsp?keyword=" },
+            { name: "PChome", icon: "https://www.google.com/s2/favicons?domain=pchome.com.tw&sz=64", url: "https://ecshweb.pchome.com.tw/search/v3.3/?q=" },
+            { name: "Yahoo", icon: "https://www.google.com/s2/favicons?domain=tw.buy.yahoo.com&sz=64", url: "https://tw.buy.yahoo.com/search/product?p=" },
+            { name: "博客來", icon: "https://www.google.com/s2/favicons?domain=books.com.tw&sz=64", url: "https://search.books.com.tw/search/query/key/" },
+            { name: "東森購物", icon: "https://www.google.com/s2/favicons?domain=etmall.com.tw&sz=64", url: "https://www.etmall.com.tw/Search?keyword=" },
+            { name: "friDay", icon: "https://www.google.com/s2/favicons?domain=friday.tw&sz=64", url: "https://shopping.friday.tw/ec2/search?searchHotKey=" },
+            { name: "Coupang", icon: "https://www.google.com/s2/favicons?domain=coupang.com&sz=64", url: "https://www.tw.coupang.com/search?q=" }
+        ];
+
+        // 動態生成圖示
+        const iconGrid = document.getElementById('platformIcons');
+        platforms.forEach(p => {
+            const div = document.createElement('div');
+            div.className = "flex flex-col items-center cursor-pointer group";
+            div.onclick = () => openSingle(p.url);
+            div.innerHTML = `
+                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition">
+                    <img src="${p.icon}" class="w-6 h-6 grayscale group-hover:grayscale-0" alt="${p.name}">
+                </div>
+                <span class="text-[11px] mt-2 text-gray-600">${p.name}</span>
+            `;
+            iconGrid.appendChild(div);
+        });
+
+        function openAll() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) {
+                alert("請先輸入商品關鍵字！");
+                return;
+            }
+
+            document.getElementById('popupWarning').classList.remove('hidden');
+
+            platforms.forEach(p => {
+                window.open(p.url + encodeURIComponent(query), '_blank');
+            });
+        }
+
+        function openSingle(baseUrl) {
+            const query = document.getElementById('searchInput').value;
+            if (!query) {
+                alert("請先輸入商品關鍵字！");
+                return;
+            }
+            window.open(baseUrl + encodeURIComponent(query), '_blank');
+        }
+
+        function lucky() {
+            const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+            openSingle(randomPlatform.url);
+        }
+
+        // 綁定 Enter 鍵
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') openAll();
+        });
+    </script>
+</body>
+
+</html>
