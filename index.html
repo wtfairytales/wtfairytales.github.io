@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聖母號計畫 - WTFairytales</title>
+    <style>
+        /* =========================================
+           《極限返航》電影風格 CSS 
+           配色：深邃太空黑、恆星金、儀表藍
+           ========================================= */
+
+        :root {
+            --bg-color: #05070a;
+            /* 深邃太空黑 */
+            --primary-color: #e2b13c;
+            /* 恆星金色 (噬星者能量) */
+            --secondary-color: #2c5d63;
+            /* 聖母號內部儀表藍 */
+            --text-color: #c4d1d9;
+            /* 電子墨水白 */
+            --accent-glow: rgba(226, 177, 60, 0.4);
+            --font-family: 'PingFang TC', 'Microsoft JhengHei', 'Courier New', monospace;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 背景：動態星空 */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(white, rgba(255, 255, 255, .2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255, 255, 255, .15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255, 255, 255, .1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        /* 中央終端機外框 */
+        .terminal-container {
+            width: 85%;
+            max-width: 900px;
+            height: 80%;
+            background: rgba(10, 15, 20, 0.95);
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 1), inset 0 0 15px rgba(44, 93, 99, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 掃描線螢幕質感 */
+        .terminal-container::after {
+            content: " ";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .terminal-header {
+            background-color: var(--secondary-color);
+            padding: 8px 15px;
+            color: var(--bg-color);
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* 主角名稱 */
+        .subject-name {
+            color: var(--primary-color);
+            font-size: 2.8rem;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 15px var(--accent-glow);
+            letter-spacing: 4px;
+        }
+
+        .mission-status {
+            font-size: 1rem;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(44, 93, 99, 0.4);
+            padding-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .status-ok {
+            color: #88ff88;
+        }
+
+        .status-alert {
+            color: #ffbc00;
+        }
+
+        /* 紀錄文字 */
+        .log-entry {
+            margin-bottom: 18px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .log-timestamp {
+            color: var(--secondary-color);
+            margin-right: 10px;
+        }
+
+        .log-text-alien {
+            color: #b388ff;
+        }
+
+        /* 洛基的對話顏色 */
+
+        /* 🚀 導覽按鈕樣式 */
+        .nav-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            text-decoration: none;
+            background: transparent;
+            font-family: var(--font-family);
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            cursor: pointer;
+            position: relative;
+            z-index: 20;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        /* 輸入提示游標 */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2rem;
+            background-color: var(--primary-color);
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="space-bg"></div>
+
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <span>聖母號 / 波江座任務：數據連線 v1.2</span>
+            <span>系統時間：[數據毀損]</span>
+        </div>
+
+        <div class="terminal-body">
+            <p class="log-timestamp">[任務執行第 402 天]</p>
+            <h1 class="subject-name">WTFairytales</h1>
+
+            <div class="mission-status">
+                目前職位：<span class="status-ok">語言學家 / 星際外交官</span><br>
+                副駕駛：<span class="status-ok">洛基 (波江星人)</span><br>
+                任務狀態：<span class="status-alert">急迫 - 噬星者隔離程序進行中</span>
+            </div>
+
+            <div class="log-container">
+                <div class="log-entry">
+                    <span class="log-timestamp">[14:02]</span>
+                    <span>系統重啟成功。記憶斷層修復。我是 <strong style="color:white">WTFairytales</strong>，人類唯一倖存者。</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">[14:15]</span>
+                    <span>視覺觀測確認。旁側出現外星艦艇：<em>閃點 A 號 (The Blip-A)</em>。</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">[15:00]</span>
+                    <span class="log-text-alien">「太棒了！你有漏洞，WTFairytales 疑問？我是洛基。我們一起做科學。」</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">[16:30]</span>
+                    <span>我們正在建立模型，試圖同時拯救地球與波江星。科學是宇宙共通的語言。</span>
+                </div>
+            </div>
+
+            <a href="website search.html" class="nav-button">
+                執行搜尋程序 (EXECUTE SEARCH)
+            </a>
+
+            <p style="margin-top: 30px; font-size: 0.8rem; color: var(--secondary-color);">
+                > 等待指令輸入<span class="cursor"></span>
+            </p>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
