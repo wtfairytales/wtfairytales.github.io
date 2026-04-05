@@ -1,240 +1,231 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>測試計畫 - WTFairytales</title>
+    <title>聖母號計畫中心 - WTFairytales</title>
     <style>
         /* =========================================
-           《極限返航》電影風格 CSS 
-           配色：深邃太空黑、恆星金、儀表藍
+           《極限返航》高階 RWD 版本
+           設計：一頁式佈局、動態星空、電影海報元素
            ========================================= */
 
         :root {
-            --bg-color: #05070a;
-            /* 深邃太空黑 */
-            --primary-color: #e2b13c;
-            /* 恆星金色 (噬星者能量) */
-            --secondary-color: #2c5d63;
-            /* 聖母號內部儀表藍 */
-            --text-color: #c4d1d9;
-            /* 電子墨水白 */
-            --accent-glow: rgba(226, 177, 60, 0.4);
-            --font-family: 'PingFang TC', 'Microsoft JhengHei', 'Courier New', monospace;
+            --primary-gold: #e2b13c;
+            --terminal-blue: #2c5d63;
+            --text-light: #c4d1d9;
+            --bg-dark: #05070a;
+            --glass-bg: rgba(5, 7, 10, 0.85);
         }
 
-        body,
-        html {
+        * { box-sizing: border-box; }
+
+        body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            overflow: hidden;
+            background-color: var(--bg-dark);
+            /* 加入充滿星星的太空背景圖片 */
+            background-image: url('https://images.unsplash.com/photo-1475275083424-b4ff81625b60?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            color: var(--text-light);
+            overflow: hidden; /* 電腦版保持一頁呈現 */
+        }
+
+        /* 響應式容器：電腦版一頁式 */
+        .main-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
+            height: 100vh;
+            padding: 20px;
+            backdrop-filter: blur(3px); /* 背景輕微模糊提升質感 */
         }
 
-        /* 背景：動態星空 */
-        .space-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .terminal-container {
+            display: flex;
+            flex-direction: row; /* 左右佈局：海報與文字 */
+            width: 95%;
+            max-width: 1100px;
+            height: 85vh;
+            background: var(--glass-bg);
+            border: 1px solid var(--terminal-blue);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 左側：電影海報區 */
+        .poster-side {
+            flex: 1;
+            background: #000;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--terminal-blue);
+        }
+
+        .poster-side img {
             width: 100%;
             height: 100%;
-            background-image:
-                radial-gradient(white, rgba(255, 255, 255, .2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255, 255, 255, .15) 1px, transparent 2px),
-                radial-gradient(white, rgba(255, 255, 255, .1) 2px, transparent 3px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            z-index: -1;
-            opacity: 0.4;
+            object-fit: cover;
+            opacity: 0.7;
+            transition: 0.5s;
         }
 
-        /* 中央終端機外框 */
-        .terminal-container {
-            width: 85%;
-            max-width: 900px;
-            height: 80%;
-            background: rgba(10, 15, 20, 0.95);
-            border: 1px solid var(--secondary-color);
-            border-radius: 4px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 1), inset 0 0 15px rgba(44, 93, 99, 0.2);
+        .poster-side:hover img { opacity: 0.9; }
+
+        .poster-overlay {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 0;
+        }
+
+        /* 右側：終端機文字區 */
+        .content-side {
+            flex: 1.5;
             display: flex;
             flex-direction: column;
-            position: relative;
-        }
-
-        /* 掃描線螢幕質感 */
-        .terminal-container::after {
-            content: " ";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .terminal-header {
-            background-color: var(--secondary-color);
-            padding: 8px 15px;
-            color: var(--bg-color);
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        .terminal-body {
-            flex: 1;
-            padding: 40px;
+            padding: 30px;
             overflow-y: auto;
         }
 
-        /* 主角名稱 */
+        .terminal-header {
+            color: var(--terminal-blue);
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            border-bottom: 1px dotted var(--terminal-blue);
+            padding-bottom: 5px;
+        }
+
         .subject-name {
-            color: var(--primary-color);
-            font-size: 2.8rem;
-            margin: 0 0 10px 0;
-            text-shadow: 0 0 15px var(--accent-glow);
-            letter-spacing: 4px;
+            color: var(--primary-gold);
+            font-size: 2.5rem;
+            margin: 10px 0;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(226, 177, 60, 0.5);
         }
 
-        .mission-status {
-            font-size: 1rem;
-            margin-bottom: 30px;
-            border-bottom: 1px solid rgba(44, 93, 99, 0.4);
-            padding-bottom: 15px;
-            line-height: 1.8;
-        }
-
-        .status-ok {
-            color: #88ff88;
-        }
-
-        .status-alert {
-            color: #ffbc00;
-        }
-
-        /* 紀錄文字 */
-        .log-entry {
-            margin-bottom: 18px;
+        .log-box {
+            flex: 1;
+            font-size: 0.9rem;
             line-height: 1.6;
-            font-size: 0.95rem;
+            margin: 20px 0;
         }
 
-        .log-timestamp {
-            color: var(--secondary-color);
-            margin-right: 10px;
+        .log-entry { margin-bottom: 15px; }
+        .log-text-alien { color: #b388ff; }
+
+        /* 按鈕區域 */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
-        .log-text-alien {
-            color: #b388ff;
-        }
-
-        /* 洛基的對話顏色 */
-
-        /* 🚀 導覽按鈕樣式 */
         .nav-button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 30px;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            flex: 1;
+            min-width: 180px;
+            padding: 12px;
+            text-align: center;
+            color: var(--primary-gold);
+            border: 1px solid var(--primary-gold);
             text-decoration: none;
-            background: transparent;
-            font-family: var(--font-family);
+            background: rgba(226, 177, 60, 0.05);
             font-weight: bold;
-            letter-spacing: 2px;
             transition: 0.3s;
-            cursor: pointer;
-            position: relative;
-            z-index: 20;
+            text-transform: uppercase;
         }
 
         .nav-button:hover {
-            background: var(--primary-color);
-            color: var(--bg-color);
-            box-shadow: 0 0 20px var(--primary-color);
+            background: var(--primary-gold);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--primary-gold);
         }
 
-        /* 輸入提示游標 */
+        /* RWD 響應式調整 */
+        @media (max-width: 768px) {
+            body, html { overflow: auto; } /* 手機版允許捲動 */
+            .main-wrapper { height: auto; padding: 10px; }
+            .terminal-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .poster-side { height: 300px; }
+            .subject-name { font-size: 1.8rem; }
+            .button-group { flex-direction: column; }
+        }
+
         .cursor {
             display: inline-block;
             width: 8px;
-            height: 1.2rem;
-            background-color: var(--primary-color);
+            height: 1rem;
+            background: var(--primary-gold);
             animation: blink 1s infinite;
-            vertical-align: middle;
-            margin-left: 5px;
         }
-
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-
 <body>
 
-    <div class="space-bg"></div>
-
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <span>聖母號 / 波江座任務：數據連線 v1.2</span>
-            <span>系統時間：[數據毀損]</span>
-        </div>
-
-        <div class="terminal-body">
-            <p class="log-timestamp">[任務執行第 402 天]</p>
-            <h1 class="subject-name">WTFairytales</h1>
-
-            <div class="mission-status">
-                目前職位：<span class="status-ok">語言學家 / 星際外交官</span><br>
-                副駕駛：<span class="status-ok">洛基 (波江星人)</span><br>
-                任務狀態：<span class="status-alert">急迫 - 噬星者隔離程序進行中</span>
-            </div>
-
-            <div class="log-container">
-                <div class="log-entry">
-                    <span class="log-timestamp">[14:02]</span>
-                    <span>系統重啟成功。記憶斷層修復。我是 <strong style="color:white">WTFairytales</strong>，人類唯一倖存者。</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-timestamp">[14:15]</span>
-                    <span>視覺觀測確認。旁側出現外星艦艇：<em>閃點 A 號 (The Blip-A)</em>。</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-timestamp">[15:00]</span>
-                    <span class="log-text-alien">「太棒了！你有漏洞，WTFairytales 疑問？我是洛基。我們一起做科學。」</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-timestamp">[16:30]</span>
-                    <span>我們正在建立模型，試圖同時拯救地球與波江星。科學是宇宙共通的語言。</span>
+    <div class="main-wrapper">
+        <div class="terminal-container">
+            
+            <div class="poster-side">
+                <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Mission Poster">
+                <div class="poster-overlay">
+                    <small>MISSION ID: PROJECT HAIL MARY</small>
                 </div>
             </div>
 
-            <a href="website search.html" class="nav-button">
-                執行搜尋程序 (EXECUTE SEARCH)
-            </a>
+            <div class="content-side">
+                <div class="terminal-header">
+                    [系統狀態：在線] [使用者：WTFairytales] [地點：波江座]
+                </div>
+                
+                <h1 class="subject-name">WTFairytales</h1>
+                
+                <div class="log-box">
+                    <div class="log-entry">
+                        <span style="color:var(--terminal-blue)">> STATUS:</span> 正在同步星圖數據。發現不明物體。
+                    </div>
+                    <div class="log-entry">
+                        <span style="color:var(--terminal-blue)">> RECORD:</span> 科學是唯一的共通點。我和洛基（Rocky）已經完成了交叉驗證。
+                    </div>
+                    <div class="log-entry log-text-alien">
+                        「你觀察，我工作。我們拯救兩家，WTFairytales。」
+                    </div>
+                    <div class="log-entry" style="border-top: 1px solid #222; padding-top: 10px; font-style: italic;">
+                        警告：噬星者感染率已達 12%。請儘速執行搜尋與防禦程序。
+                    </div>
+                </div>
 
-            <p style="margin-top: 30px; font-size: 0.8rem; color: var(--secondary-color);">
-                > 等待指令輸入<span class="cursor"></span>
-            </p>
+                <div class="button-group">
+                    <a href="website search.html" class="nav-button">
+                        搜尋程序 (SEARCH)
+                    </a>
+                    <a href="Chicken_v1.html" class="nav-button">
+                        雛雞計畫 (CHICKEN V1)
+                    </a>
+                </div>
+
+                <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.6;">
+                    > AWAITING COMMAND<span class="cursor"></span>
+                </p>
+            </div>
 
         </div>
     </div>
 
 </body>
-
 </html>
